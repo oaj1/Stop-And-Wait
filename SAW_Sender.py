@@ -1,9 +1,15 @@
 import socket
 import pickle
+import random
 
 # Stop and wait program on the SENDER side
 
 # ------------------------------------------ STEP 0: DECLARATIONS (depends on the protocol that we design) ------------------------------------------
+# get user input for simulated packet loss
+seed = input("Enter a number between 0-99. Note: This number is the approximate percentage of packets that will be lost during transmission")
+# cast it to an int, otherwise python thinks it's a string for some reason
+seed = int(seed)
+
 # addresses
 # both are this local machine for now
 # using different ports for send and receive, can't be listening on same port
@@ -51,7 +57,7 @@ file = open(filename, "r")
 # iterate over file (character by character) and add the encoded strings to the packets list
 # I think this should work as expected but not 100%. Not sure if it breaks out of while loop correctly.
 while 1:
-    payload_decoded = ""
+    payload = ""
     char = ''
     # read in a payloads worth of chars
     for i in range(payload_size):
@@ -60,10 +66,10 @@ while 1:
         if not char:
             break
         # concatenate char to decoded payload
-        payload_decoded += char
+        payload += char
     # encodes in utf-8 by default
     # payload_encoded = payload_decoded.encode()
-    packets.append(payload_decoded)
+    packets.append(payload)
     # breaks while loop if no char stored from for loop
     if not char:
         break
@@ -80,16 +86,21 @@ print("parsing complete!")
 
 print("sending the data...")
 
+# data_length is the total number of "frames" that are being sent, doesn't change throughout the loop, only declare once
+data_length = len(packets)
+
 for i in range(len(packets)):
     # packet to be sent
     data = packets[i]
 
+    # -------- Simulated packet loss --------
+    random_number = random.randint(0, 99)
+    if random_number < seed:
+        continue
+
     # figure out what the SEQ should be (0 for even items, 1 for odd items)
     SEQ = i % 2
     expected_ACK = (SEQ + 1) % 2
-
-    # can't pack an int into a struct, need it to be a string or byte
-    data_length = len(b'data')
 
     # udp_header = [source_port, destination_port, total_length] CAN'T USE STRUCTS WITH LISTS, need to just
     # put all the individual items into the struct

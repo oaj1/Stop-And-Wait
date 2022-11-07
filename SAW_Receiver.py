@@ -17,7 +17,8 @@ sender_addr = (sender_ip, sender_port)
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # need to bind so we can receive data
 sock.bind(receiver_addr)
-sock.settimeout(5)
+# timeout is 10s for now so user can input something at the beginning of sender code
+sock.settimeout(10)
 
 # protocols
 buff_size = 1300
@@ -27,7 +28,7 @@ buff_size = 1300
 kill_conn_message = "FINISH"
 # this is where we'll put all the decoded data that we receive
 file_data = []
-filename = "../../socketsTest_NetworkAndData/COSC635_P2_DataReceived.txt"
+filename = "COSC635_P2_DataReceived.txt"
 
 print("Awaiting data on:", receiver_addr)
 
