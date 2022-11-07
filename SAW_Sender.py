@@ -1,6 +1,8 @@
 import socket
 import pickle
 import random
+import time
+import os
 
 # Stop and wait program on the SENDER side
 
@@ -43,6 +45,13 @@ packets = []
 # name of the file to be sent, should be located within the project directory so we don't have to navigate to it.
 filename = "COSC635_P2_DataSent.txt"
 
+# Statistic data
+# total frames sent
+frames_sent = 0
+# total frames lost
+frames_lost = 0
+# size of file in bytes
+file_size = os.path.getsize(filename)
 
 # ------------------------------------------ STEP 1: DEALING WITH THE FILE ------------------------------------------
 # this step deals with: Open the file, read the file, add encoded (utf-8) bytes into the packets list
@@ -89,6 +98,7 @@ print("sending the data...")
 # data_length is the total number of "frames" that are being sent, doesn't change throughout the loop, only declare once
 data_length = len(packets)
 
+start = time.perf_counter()
 for i in range(len(packets)):
     # packet to be sent
     data = packets[i]
@@ -96,6 +106,7 @@ for i in range(len(packets)):
     # -------- Simulated packet loss --------
     random_number = random.randint(0, 99)
     if random_number < seed:
+        frames_lost += 1
         continue
 
     # figure out what the SEQ should be (0 for even items, 1 for odd items)
@@ -114,8 +125,9 @@ for i in range(len(packets)):
 
     # put the communications into a try except block
     try:
-        # send the data
+        # send the data and add statistic data
         sock.sendto(data_to_send, receiver_addr)
+        frames_sent += 1
 
         # *********** NOT SURE ABOUT THIS LINE: if this was the last message, don't wait for ack, just kill connection ***********
         if packets[i] == kill_conn_message:
@@ -141,6 +153,27 @@ for i in range(len(packets)):
     except socket.timeout:
         print("timeout error")
         i -= 1
-
+stop = time.perf_counter()
 print("data has been sent!")
 
+# ------------------------------------------ STEP 3: DISPLAY STATISTICS ------------------------------------------
+# transmission time
+transmission_time = stop-start
+# percentage of lost frames
+if frames_sent > 0:
+    loss_percent = (frames_lost/frames_sent)*100
+else:
+    loss_percent = 100
+
+print("-------------------")
+print("")
+print("Transmission Statistics")
+print("")
+print("Transmission time: ", transmission_time, "seconds")
+print("File Size:", file_size, "bytes")
+print("Total frames in file:", data_length)
+print("Total frames sent:", frames_sent)
+print("Total frames 'lost' (simulated):", frames_lost)
+print("Percentage of lost frames:", loss_percent, "%")
+print("")
+print("-------------------")

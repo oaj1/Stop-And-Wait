@@ -41,7 +41,7 @@ while True:
 
     # lets user know that data is being received
     if transmission_start is False:
-        print("Receiving data!")
+        print("Receiving data...")
         transmission_start = True
 
     # unpack the data
@@ -78,7 +78,7 @@ while True:
     except socket.timeout:
         print("Uh oh! Disconnected from the sender")
 
-print("data has been received!")
+print("Data has been received...")
 # ------------------------------------------ STEP 1: RECEIVING THE DATA ------------------------------------------
 
 print("writing the data to a file called", filename)
