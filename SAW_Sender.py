@@ -160,7 +160,7 @@ print("data has been sent!")
 # transmission time
 transmission_time = stop-start
 # percentage of lost frames
-if frames_sent > 0:
+if max_data > 0:
     loss_percent = (frames_lost/data_length)*100
 else:
     loss_percent = 100
