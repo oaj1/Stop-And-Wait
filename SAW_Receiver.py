@@ -17,8 +17,9 @@ sender_addr = (sender_ip, sender_port)
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # need to bind so we can receive data
 sock.bind(receiver_addr)
-# timeout is 10s for now so user can input something at the beginning of sender code
-sock.settimeout(10)
+# timeout is 100s until data is being received. This allows sender to run code and enter input.
+sock.settimeout(100)
+start_receive = False
 
 # protocols
 buff_size = 1300
@@ -38,6 +39,10 @@ transmission_start = False
 while True:
     # receive the data
     data, sender_addr = sock.recvfrom(buff_size)
+
+    if start_receive is False and data is not None:
+        start_receive = True
+        sock.settimeout(5)
 
     # lets user know that data is being received
     if transmission_start is False:
