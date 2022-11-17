@@ -107,7 +107,8 @@ for i in range(len(packets)):
     random_number = random.randint(0, 99)
     if random_number < seed:
         frames_lost += 1
-        continue
+        # shouldn't actually "lose" the packet, just include it in the statistics
+        # continue
 
     # figure out what the SEQ should be (0 for even items, 1 for odd items)
     SEQ = i % 2
@@ -160,7 +161,7 @@ print("data has been sent!")
 # transmission time
 transmission_time = stop-start
 # percentage of lost frames
-if max_data > 0:
+if data_length > 0:
     loss_percent = (frames_lost/data_length)*100
 else:
     loss_percent = 100
